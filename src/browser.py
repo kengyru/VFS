@@ -227,6 +227,15 @@ class VFSBrowser:
             except Exception:  # noqa: BLE001
                 continue
         if not email_filled:
+            # Сохраняем скриншот для отладки — что видит бот вместо формы
+            try:
+                debug_dir = BASE_DIR / "logs"
+                debug_dir.mkdir(parents=True, exist_ok=True)
+                path = debug_dir / f"login_page_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.png"
+                await page.screenshot(path=str(path), full_page=True)
+                logger.warning("Скриншот страницы логина сохранён: %s", path)
+            except Exception as e:  # noqa: BLE001
+                logger.warning("Не удалось сохранить скриншот: %s", e)
             raise RuntimeError("Не найдено поле email на странице логина")
 
         await self._human_delay()
