@@ -74,9 +74,11 @@ class VFSBrowser:
 
         logger.info("Starting Playwright browser")
         self._playwright = await async_playwright().start()
+        # В Docker/VPS всегда headless — нет X server
+        headless = True
         self._browser = await self._playwright.chromium.launch(
-            headless=True,  # выключите для отладки
-            args=["--no-sandbox"],
+            headless=headless,
+            args=["--no-sandbox", "--disable-dev-shm-usage"],
         )
 
         storage_state = STORAGE_STATE_PATH if STORAGE_STATE_PATH.exists() else None
