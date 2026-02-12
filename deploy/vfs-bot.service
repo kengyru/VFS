@@ -1,0 +1,17 @@
+[Unit]
+Description=VFS Global Slot Monitor (Telegram bot)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=YOUR_USER
+WorkingDirectory=/opt/vfs-bot
+Environment=PATH=/opt/vfs-bot/.venv/bin:%E
+EnvironmentFile=/opt/vfs-bot/.env
+ExecStart=/opt/vfs-bot/.venv/bin/python -m src.bot
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

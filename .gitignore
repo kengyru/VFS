@@ -1,0 +1,11 @@
+.env
+.venv
+__pycache__
+*.pyc
+*.log
+logs/
+data/
+slot_cache.json
+storage_state.json
+.idea
+.cursor

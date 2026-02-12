@@ -1,0 +1,18 @@
+# Не копировать в образ — секреты и мусор
+.env
+.venv
+__pycache__
+*.pyc
+.git
+.gitignore
+
+# Логи и кэш монтируем с хоста
+logs/
+slot_cache.json
+storage_state.json
+
+# Прочее
+*.md
+!README.md
+.cursor
+.idea

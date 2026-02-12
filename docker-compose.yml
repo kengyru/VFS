@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  vfs-bot:
+    build: .
+    container_name: vfs-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - DATA_DIR=/app/data
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    stdin_open: true
+    tty: true
+
