@@ -75,7 +75,7 @@ class VFSBrowser:
         logger.info("Starting Playwright browser")
         self._playwright = await async_playwright().start()
         self._browser = await self._playwright.chromium.launch(
-            headless=False,  # выключите для отладки
+            headless=True,  # выключите для отладки
             args=["--no-sandbox"],
         )
 

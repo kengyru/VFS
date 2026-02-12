@@ -179,7 +179,7 @@ def main() -> None:
             )
         except Exception as e:  # noqa: BLE001
             logger.exception("Error during /test_login: %s", e)
-            await message.answer(f"Ошибка при тестовом входе: {e!r}")
+            await message.answer("Ошибка при тестовом входе. Подробности смотри в логах сервера.")
         finally:
             await browser.close()
 
