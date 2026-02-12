@@ -205,13 +205,51 @@ class VFSBrowser:
         await self._human_delay()
         await self._check_captcha()
 
-        # Примеры селекторов, замените на фактические
-        await self._scroll_into_view('input[name="email"]')
-        await page.fill('input[name="email"]', email)
+        # Пробуем разные селекторы поля email (разметка VFS может отличаться)
+        email_selectors = [
+            'input[name="email"]',
+            'input[type="email"]',
+            'input[name="username"]',
+            'input[id="email"]',
+            'input[id="Email"]',
+            'input[placeholder*="mail"]',
+            'input[placeholder*="почт"]',
+        ]
+        email_filled = False
+        for sel in email_selectors:
+            try:
+                el = await page.wait_for_selector(sel, timeout=3000)
+                if el:
+                    await self._scroll_into_view(sel)
+                    await page.fill(sel, email)
+                    email_filled = True
+                    break
+            except Exception:  # noqa: BLE001
+                continue
+        if not email_filled:
+            raise RuntimeError("Не найдено поле email на странице логина")
+
         await self._human_delay()
 
-        await self._scroll_into_view('input[name="password"]')
-        await page.fill('input[name="password"]', password)
+        # Поле пароля
+        pwd_selectors = [
+            'input[name="password"]',
+            'input[type="password"]',
+        ]
+        pwd_filled = False
+        for sel in pwd_selectors:
+            try:
+                el = await page.wait_for_selector(sel, timeout=3000)
+                if el:
+                    await self._scroll_into_view(sel)
+                    await page.fill(sel, password)
+                    pwd_filled = True
+                    break
+            except Exception:  # noqa: BLE001
+                continue
+        if not pwd_filled:
+            raise RuntimeError("Не найдено поле пароля на странице логина")
+
         await self._human_delay()
 
         await self._human_click('button[type="submit"]')
