@@ -191,9 +191,17 @@ class VFSBrowser:
         await self._ensure_browser()
         page = self.page
 
-        login_url = "https://visa.vfsglobal.com/rus/ru/bgr/login"  # примерный URL
+        # Сначала главная страница — иногда помогает пройти Cloudflare
+        base_url = "https://visa.vfsglobal.com/rus/ru/bgr"
+        logger.info("Opening main page %s", base_url)
+        await page.goto(base_url, wait_until="domcontentloaded", timeout=60000)
+        await self._human_delay()
+        await self._check_captcha()
+
+        # Потом форма логина
+        login_url = f"{base_url}/login"
         logger.info("Opening login page %s", login_url)
-        await page.goto(login_url, wait_until="load", timeout=60000)
+        await page.goto(login_url, wait_until="domcontentloaded", timeout=60000)
         await self._human_delay()
         await self._check_captcha()
 
