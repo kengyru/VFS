@@ -12,6 +12,7 @@ Browser-модуль на Playwright, эмулирующий человечес�
 from __future__ import annotations
 
 import asyncio
+import os
 import logging
 import random
 from contextlib import asynccontextmanager
@@ -73,11 +74,13 @@ class VFSBrowser:
             return
 
         logger.info("Starting Playwright browser")
+        # PWDEBUG=1 включает headed режим — в контейнере принудительно выключаем
+        if "PWDEBUG" in os.environ:
+            os.environ.pop("PWDEBUG", None)
         self._playwright = await async_playwright().start()
         # В Docker/VPS всегда headless — нет X server
-        headless = True
         self._browser = await self._playwright.chromium.launch(
-            headless=headless,
+            headless=True,
             args=["--no-sandbox", "--disable-dev-shm-usage"],
         )
 
