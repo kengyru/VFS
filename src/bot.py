@@ -32,6 +32,8 @@ from aiogram.types import (
 from aiogram import BaseMiddleware
 from typing import Any, Awaitable, Callable, Dict
 
+import os
+
 from .browser import VFSBrowser, CaptchaDetected
 from .config import BASE_DIR, get_settings
 from .monitor import MonitorService
@@ -119,6 +121,18 @@ def main() -> None:
     @dp.message(Command("start"))
     async def cmd_start(message: Message, state: FSMContext) -> None:
         await state.set_state(MonitorStates.idle)
+        manual_login = os.environ.get("VFS_MANUAL_LOGIN", "").strip().lower() in ("1", "true", "yes")
+
+        if manual_login:
+            await message.answer(
+                "👋 Привет! Режим ручного логина.\n\n"
+                "Нажми «Запустить мониторинг» — откроется браузер. "
+                "Залогинься в VFS вручную и перейди на страницу записи.\n"
+                "Бот будет проверять слоты на текущей странице.",
+                reply_markup=main_keyboard(),
+            )
+            return
+
         await message.answer(
             "👋 Привет! Я бот для мониторинга свободных слотов VFS Global.\n\n"
             "Используй кнопки ниже для управления мониторингом.\n"

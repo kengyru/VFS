@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import AsyncIterator, List, Optional
 from urllib.parse import urlparse
 
+from dotenv import load_dotenv
 from playwright.async_api import Browser, BrowserContext, Page, async_playwright
 
 from .config import BASE_DIR, DATA_DIR, get_settings
@@ -308,7 +309,11 @@ class VFSBrowser:
         В ручном режиме (VFS_MANUAL_LOGIN=1) бот логин не выполняет, а
         лишь подключается к уже авторизованному браузеру.
         """
+        # Гарантируем загрузку .env (важно при вызове из monitor)
+        load_dotenv(BASE_DIR / ".env", override=True)
         manual_login = os.environ.get("VFS_MANUAL_LOGIN", "").strip().lower() in ("1", "true", "yes")
+        if manual_login:
+            logger.info("VFS_MANUAL_LOGIN=1: открываем страницу страны без автологина")
 
         await self._ensure_browser()
         page = self.page

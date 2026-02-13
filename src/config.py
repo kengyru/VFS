@@ -21,8 +21,9 @@ DATA_DIR = Path(os.environ.get("DATA_DIR", str(BASE_DIR)))
 ENV_PATH = BASE_DIR / ".env"
 
 # Явно загружаем переменные окружения из .env, если файл существует
+# override=True — .env имеет приоритет над системными переменными
 if ENV_PATH.exists():
-    load_dotenv(ENV_PATH, override=False)
+    load_dotenv(ENV_PATH, override=True)
 
 
 class BotConfig(BaseModel):
@@ -87,8 +88,12 @@ def get_settings() -> Settings:
         return [int(x.strip()) for x in value.split(",") if x.strip()]
 
     try:
+        raw_token = (env.get("BOT_TOKEN") or "").strip()
+        # Убираем BOM и невидимые символы в начале (если .env сохранён с BOM)
+        if raw_token.startswith("\ufeff"):
+            raw_token = raw_token[1:]
         bot = BotConfig(
-            token=env.get("BOT_TOKEN", ""),
+            token=raw_token,
             admin_chat_id=int(env.get("ADMIN_CHAT_ID", "0") or "0"),
         )
         vfs = VFSConfig(
