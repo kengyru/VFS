@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   vfs-bot:
     build: .
@@ -13,6 +11,4 @@ services:
     volumes:
       - ./logs:/app/logs
       - ./data:/app/data
-    stdin_open: true
-    tty: true
 

@@ -14,6 +14,7 @@ import json
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
+import os
 from pathlib import Path
 from typing import Awaitable, Callable, Optional, Set
 
@@ -150,7 +151,15 @@ class MonitorService:
                     await self.stop()
                     break
 
-                await browser.navigate_to_booking()
+                # В режиме ручного логина пользователь сам доходит до нужного календаря.
+                # navigate_to_booking() может не совпадать с реальным UI и давать таймауты,
+                # поэтому при VFS_MANUAL_LOGIN=1 пропускаем этот шаг.
+                manual_login = (
+                    os.environ.get("VFS_MANUAL_LOGIN", "").strip().lower() in ("1", "true", "yes")
+                )
+                if not manual_login:
+                    await browser.navigate_to_booking()
+
                 slots = await browser.get_available_slots()
                 new_slots = self._filter_new_slots(slots)
 

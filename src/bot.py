@@ -13,7 +13,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from aiogram import Bot, Dispatcher, F
@@ -23,6 +23,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import (
+    BufferedInputFile,
     CallbackQuery,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
@@ -170,7 +171,7 @@ def main() -> None:
             )
             screenshot_dir = BASE_DIR / "logs"
             screenshot_dir.mkdir(parents=True, exist_ok=True)
-            screenshot_path = screenshot_dir / f"test_login_{datetime.utcnow().isoformat().replace(':', '-')}.png"
+            screenshot_path = screenshot_dir / f"test_login_{datetime.now(timezone.utc).isoformat().replace(':', '-')}.png"
             await browser.screenshot(screenshot_path)
         except CaptchaDetected:
             await message.answer(
@@ -190,8 +191,12 @@ def main() -> None:
 
         if screenshot_path and screenshot_path.exists():
             try:
+                photo_file = BufferedInputFile(
+                    screenshot_path.read_bytes(),
+                    filename="test_login.png",
+                )
                 await message.answer_photo(
-                    photo=screenshot_path.read_bytes(),
+                    photo=photo_file,
                     caption="Скриншот после попытки входа.",
                 )
             except Exception as e:  # noqa: BLE001
