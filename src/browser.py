@@ -184,9 +184,9 @@ class VFSBrowser:
             if "PWDEBUG" in os.environ:
                 os.environ.pop("PWDEBUG", None)
             self._playwright = await async_playwright().start()
+            # В Docker нет Google Chrome — используем Chromium. headless=True для сервера/контейнера.
             self._browser = await self._playwright.chromium.launch(
-                channel="chrome",
-                headless=False,
+                headless=True,
             )
             self._cdp_mode = False
 
